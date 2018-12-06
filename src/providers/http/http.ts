@@ -11,7 +11,7 @@ export class HttpProvider {
   get(route: string): Promise<any> {
     return new Promise(
       (resolve, reject) => {
-        this.http.get("http://192.168.43.176:5000" + route, {withCredentials: true}).subscribe(
+        this.http.get("http://localhost:5000" + route, {withCredentials: true}).subscribe(
           data => {
             resolve(data);
           },
@@ -26,7 +26,7 @@ export class HttpProvider {
   post(route: string, body:any): Promise<any> {
     return new Promise(
       (resolve, reject) => {
-        this.http.post("http://192.168.43.176:5000" + route, body, {withCredentials: true}).subscribe(
+        this.http.post("http://localhost:5000" + route, body, {withCredentials: true}).subscribe(
           data => {
             console.log(data);
             resolve(data);
