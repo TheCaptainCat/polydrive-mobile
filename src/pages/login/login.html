@@ -1,0 +1,22 @@
+<ion-header>
+  <ion-navbar color="primary">
+    <ion-title>Connexion</ion-title>
+  </ion-navbar>
+</ion-header>
+
+<ion-content padding>
+  <form [formGroup]="loginForm" (ngSubmit)="login()">
+    <ion-item>
+      <ion-label color="grey" floating>Pseudo</ion-label>
+      <ion-input required formControlName="username" type="text"></ion-input>
+    </ion-item>
+    <ion-item>
+      <ion-label color="grey" floating>Mot de passe</ion-label>
+      <ion-input required formControlName="password" type="password"></ion-input>
+    </ion-item>
+    <div padding text-center>
+      <button ion-button type="submit" [disabled]="!loginForm.valid">Connexion</button>
+      <button ion-button type="button" (click)="goToRegisterPage()">Inscription</button>
+    </div>
+  </form>
+</ion-content>
