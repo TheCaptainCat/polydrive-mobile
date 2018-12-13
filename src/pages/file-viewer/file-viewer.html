@@ -1,0 +1,17 @@
+<ion-header>
+
+  <ion-navbar>
+    <ion-title>FileViewer</ion-title>
+    <ion-buttons end>
+      <button ion-button (click)="closeModal()">
+        Fermer
+      </button>
+    </ion-buttons>
+  </ion-navbar>
+
+</ion-header>
+
+
+<ion-content padding>
+  <img *ngIf="imageURL" [src]="imageURL">
+</ion-content>

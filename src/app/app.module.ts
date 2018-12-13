@@ -10,12 +10,15 @@ import { StatusBar } from '@ionic-native/status-bar';
 import { SplashScreen } from '@ionic-native/splash-screen';
 import { HttpProvider } from '../providers/http/http';
 import { HttpClientModule } from '@angular/common/http';
+import { FileViewerPage } from '../pages/file-viewer/file-viewer';
+
 
 @NgModule({
   declarations: [
     MyApp,
     HomePage,
-    LoginPage
+    LoginPage,
+    FileViewerPage
   ],
   imports: [
     BrowserModule,
@@ -26,13 +29,14 @@ import { HttpClientModule } from '@angular/common/http';
   entryComponents: [
     MyApp,
     HomePage,
-    LoginPage
+    LoginPage,
+    FileViewerPage
   ],
   providers: [
     StatusBar,
     SplashScreen,
     {provide: ErrorHandler, useClass: IonicErrorHandler},
-    HttpProvider,
+    HttpProvider
   ]
 })
 export class AppModule {}

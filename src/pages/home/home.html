@@ -3,16 +3,28 @@
     <button ion-button menuToggle>
       <ion-icon name="menu"></ion-icon>
     </button>
-    <ion-title>Home</ion-title>
+    <ion-title>{{currentFolder.name}}</ion-title>
+    <ion-buttons end>
+      <div>
+        <label tappable class="navbar-icon">
+          <ion-icon name="cloud-upload"></ion-icon>
+          <input type="file" id="File" (change)="changeFile($event)" size="60" >
+        </label>
+        <ion-icon tappable name="folder" class="navbar-icon" (click)="createFolder()"></ion-icon>
+      </div>
+    </ion-buttons>
   </ion-navbar>
 </ion-header>
 
-<ion-content padding>
-  <h3>Ionic Menu Starter</h3>
-
-  <p>
-    If you get lost, the <a href="http://ionicframework.com/docs/v2">docs</a> will show you the way.
-  </p>
-
-  <button ion-button secondary menuToggle>Toggle Menu</button>
+<ion-content>
+  <ion-list>
+    <ng-container *ngFor="let file of currentFilesList">
+      <ion-item color="primary" tappable *ngIf="file.children" (click)="openFolder(file)">
+        {{file.name}}
+      </ion-item>
+      <ion-item tappable *ngIf="!file.children" (click)="openFile(file)">
+        {{file.name}}
+      </ion-item>
+    </ng-container>
+  </ion-list>
 </ion-content>

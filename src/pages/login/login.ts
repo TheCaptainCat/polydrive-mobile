@@ -24,11 +24,8 @@ export class LoginPage {
   }
 
   login(): void {
-    console.log(this.loginForm.value);
-    
     this.http.post("/login", this.loginForm.value).then(
       res => {
-        console.log(res);
         this.navCtrl.setRoot(HomePage);
       }
     );

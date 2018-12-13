@@ -8,10 +8,13 @@ export class HttpProvider {
     private http: HttpClient
   ) { }
 
-  get(route: string): Promise<any> {
+  get(route: string, type?: any): Promise<any> {
     return new Promise(
       (resolve, reject) => {
-        this.http.get("http://localhost:5000" + route, {withCredentials: true}).subscribe(
+        this.http.get("http://localhost:5000" + route, {
+          withCredentials: true,
+          responseType: type
+        }).subscribe(
           data => {
             resolve(data);
           },
@@ -28,7 +31,6 @@ export class HttpProvider {
       (resolve, reject) => {
         this.http.post("http://localhost:5000" + route, body, {withCredentials: true}).subscribe(
           data => {
-            console.log(data);
             resolve(data);
           },
           err => {

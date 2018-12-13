@@ -1,5 +1,5 @@
 import { Component, ViewChild } from '@angular/core';
-import { Nav, Platform } from 'ionic-angular';
+import { Nav, Platform, LoadingController } from 'ionic-angular';
 import { StatusBar } from '@ionic-native/status-bar';
 import { SplashScreen } from '@ionic-native/splash-screen';
 
@@ -18,10 +18,11 @@ export class MyApp {
   pages: Array<{title: string, component: any}>;
 
   constructor(
-    public platform: Platform,
-    public statusBar: StatusBar,
-    public splashScreen: SplashScreen,
-    private http: HttpProvider
+    private platform: Platform,
+    private statusBar: StatusBar,
+    private splashScreen: SplashScreen,
+    private http: HttpProvider,
+    private loadingCtrl: LoadingController
   ) {
     this.initializeApp();
 
@@ -53,5 +54,20 @@ export class MyApp {
     // Reset the content nav to have just this page
     // we wouldn't want the back button to show in this scenario
     this.nav.setRoot(page.component);
+  }
+
+  logout() {
+    const loading = this.loadingCtrl.create({
+      content: 'Déconnexion'
+    });
+
+    loading.present();
+
+    this.http.get('/logout').then(
+      res => {
+        this.nav.setRoot(LoginPage);
+        loading.dismiss();
+      }
+    );
   }
 }
