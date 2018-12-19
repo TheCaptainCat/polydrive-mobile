@@ -19,10 +19,12 @@
 <ion-content>
   <ion-list>
     <ng-container *ngFor="let file of currentFilesList">
-      <ion-item color="primary" tappable *ngIf="file.children" (click)="openFolder(file)">
+      <ion-item tappable *ngIf="file.children" (click)="openFolder(file)">
+        <ion-icon color="gray" name="folder" item-start></ion-icon>
         {{file.name}}
       </ion-item>
-      <ion-item tappable *ngIf="!file.children" (click)="openFile(file)">
+      <ion-item tappable *ngIf="!file.children" (press)="selectFile(file)" (tap)="openFile(file)">
+        <ion-icon color="gray" name="document" item-start></ion-icon>
         {{file.name}}
       </ion-item>
     </ng-container>

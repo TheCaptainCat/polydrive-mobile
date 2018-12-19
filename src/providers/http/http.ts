@@ -26,7 +26,7 @@ export class HttpProvider {
     );
   }
 
-  post(route: string, body:any): Promise<any> {
+  post(route: string, body: any): Promise<any> {
     return new Promise(
       (resolve, reject) => {
         this.http.post("http://localhost:5000" + route, body, {withCredentials: true}).subscribe(
@@ -37,6 +37,21 @@ export class HttpProvider {
             reject(err);
           }
         );
+      }
+    )
+  }
+
+  delete(route: string) {
+    return new Promise(
+      (resolve, reject) => {
+        this.http.delete("http://localhost:5000" + route, {withCredentials: true}).subscribe(
+          data => {
+            resolve(data)
+          },
+          err => {
+            reject(err)
+          }
+        )
       }
     )
   }

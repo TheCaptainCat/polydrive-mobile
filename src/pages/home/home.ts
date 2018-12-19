@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { NavController, ModalController, NavParams, AlertController } from 'ionic-angular';
+import { NavController, ModalController, NavParams, AlertController, LoadingController } from 'ionic-angular';
 import { HttpProvider } from '../../providers/http/http';
 import { FileViewerPage } from '../file-viewer/file-viewer';
 
@@ -21,7 +21,8 @@ export class HomePage {
     private http: HttpProvider,
     private modalCtrl: ModalController,
     private navParams: NavParams,
-    private alertCtrl: AlertController
+    private alertCtrl: AlertController,
+    private loadingCtrl: LoadingController
   ) {
     this.currentFolder = {
       id: null,
@@ -38,34 +39,40 @@ export class HomePage {
   }
 
   fetchData() {
+    const loading = this.loadingCtrl.create();
+    loading.present();
     if (this.currentFolder.id) {
       this.http.get('/folders/' + this.currentFolder.id).then(
         res => {
+          loading.dismiss();
           this.initFileList(res.content);
         },
         err => {
-          console.log(err);
+          loading.dismiss();
+          let alertTitle = 'Une erreur est survenue. Veuillez vérifier votre connexion.';
           if (err.error.code == 401) {
-            this.alertCtrl.create({
-              title: 'Vous n\'avez pas les droits d\'accès à ce dossier',
-              buttons: [{
-                text: 'Ok',
-                handler: () => {
-                  this.navCtrl.pop();
-                }
-              }]
-            }).present();
+            alertTitle = 'Vous n\'avez pas les droits d\'accès à ce dossier.';
           }
+          this.alertCtrl.create({
+            title: alertTitle,
+            buttons: [{
+              text: 'Ok',
+              handler: () => {
+                this.navCtrl.pop();
+              }
+            }]
+          }).present();
         }
       );
     }
     else {
       this.http.get('/folders').then(
         res => {
+          loading.dismiss();
           this.initFileList(res.content);
         },
         err => {
-          console.log(err);
+          loading.dismiss();
           if (err.error.code == 401) {
             this.alertCtrl.create({
               title: 'Vous n\'avez pas les droits d\'accès à ce dossier',
@@ -100,9 +107,14 @@ export class HomePage {
   upload() {
     var fd = new FormData();
     fd.append('file', this.uploadFile);
-    fd.append('parent_id', this.currentFolder.id.toString());
+    if (this.currentFolder.id) {
+      fd.append('parent_id', this.currentFolder.id.toString());
+    }
+    const loading = this.loadingCtrl.create();
+    loading.present();
     this.http.post("/files", fd).then(
       res => {
+        loading.dismiss();
         this.fetchData();
         this.alertCtrl.create({
           title: 'Upload réussi',
@@ -111,6 +123,7 @@ export class HomePage {
         }).present();
       },
       err => {
+        loading.dismiss();
         this.alertCtrl.create({
           title: 'Erreur lors de l\'upload',
           message: 'Une erreur est survenue. Veuillez réessayer',
@@ -169,6 +182,51 @@ export class HomePage {
       ]
     });
     alert.present();
+  }
+
+  selectFile(file: any) {
+    this.alertCtrl.create({
+      title: 'Supprimer le fichier ?',
+      buttons: [
+        {
+          text: 'Supprimer',
+          handler: () => {
+            this.delete(file);
+          }
+        },
+        {
+          text: 'Annuler'
+        }
+      ]
+    }).present();
+  }
+
+  delete(file) {
+    console.log(file);
+    const loading = this.loadingCtrl.create();
+    loading.present();
+    this.http.delete('/files/' + file.id).then(
+      res => {
+        loading.dismiss();
+        console.log(res);
+        this.fetchData();
+        this.alertCtrl.create({
+          title:'Le fichier a bien été supprimé',
+          buttons: [
+            {
+              text: 'Ok',
+              handler: () => {
+                this.fetchData
+              }
+            }
+          ]
+        }).present();
+      },
+      err => {
+        loading.dismiss();
+        console.log(err);
+      }
+    )
   }
   
 }
