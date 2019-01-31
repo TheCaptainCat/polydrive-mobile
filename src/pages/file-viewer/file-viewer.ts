@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { NavController, NavParams } from 'ionic-angular';
+import { NavController, NavParams, ViewController } from 'ionic-angular';
 import { HttpProvider } from '../../providers/http/http';
 import { DomSanitizer } from '@angular/platform-browser';
 
@@ -16,22 +16,29 @@ export class FileViewerPage {
     private navCtrl: NavController,
     private navParams: NavParams,
     private http: HttpProvider,
-    private sanitizer: DomSanitizer
+    private sanitizer: DomSanitizer,
+    private viewCtrl: ViewController
   ) {
     this.file = this.navParams.data;
   }
 
   ionViewDidLoad() {
-    this.http.get('/files/' + this.file.id + '/file', 'blob').then(
+    this.http.get('/res/' + this.file.id + '/download', 'blob').then(
       res => {
+        console.log(res);
+        
         const unsafeImageURL = URL.createObjectURL(res);
         this.imageURL = this.sanitizer.bypassSecurityTrustUrl(unsafeImageURL);
+      },
+      err => {
+        console.log(err);
+        
       }
     )
   }
 
   closeModal() {
-    this.navCtrl.pop();
+    this.viewCtrl.dismiss();
   }
 
 
