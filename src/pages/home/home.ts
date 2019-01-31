@@ -42,7 +42,7 @@ export class HomePage {
     const loading = this.loadingCtrl.create();
     loading.present();
     if (this.currentFolder.id) {
-      this.http.get('/folders/' + this.currentFolder.id).then(
+      this.http.get('/res/' + this.currentFolder.id).then(
         res => {
           loading.dismiss();
           this.initFileList(res.content);
@@ -66,7 +66,7 @@ export class HomePage {
       );
     }
     else {
-      this.http.get('/folders').then(
+      this.http.get('/res').then(
         res => {
           loading.dismiss();
           this.initFileList(res.content);
@@ -90,7 +90,12 @@ export class HomePage {
   }
 
   initFileList(content: any) {
-    this.currentFilesList = content;
+    if (content.children) {
+      this.currentFilesList = content.children;
+    }
+    else {
+      this.currentFilesList = content;
+    }
   }
 
   openFile(file: any) {
@@ -107,12 +112,13 @@ export class HomePage {
   upload() {
     var fd = new FormData();
     fd.append('file', this.uploadFile);
-    if (this.currentFolder.id) {
-      fd.append('parent_id', this.currentFolder.id.toString());
-    }
     const loading = this.loadingCtrl.create();
     loading.present();
-    this.http.post("/files", fd).then(
+    let route = "";
+    if (this.currentFolder.id) {
+      route = "/" + this.currentFolder.id;
+    }
+    this.http.post("/res/upload" + route, fd).then(
       res => {
         loading.dismiss();
         this.fetchData();
@@ -123,6 +129,7 @@ export class HomePage {
         }).present();
       },
       err => {
+        console.log(err);
         loading.dismiss();
         this.alertCtrl.create({
           title: 'Erreur lors de l\'upload',
@@ -157,9 +164,10 @@ export class HomePage {
           text: 'Ok',
           handler: data => {
             console.log(data);
-            this.http.post('/folders', {
+            this.http.post('/res', {
               name: data.folderName,
-              parent_id: this.currentFolder.id
+              parent_id: this.currentFolder.id,
+              type: 'folder'
             }).then(
               res => {
                 this.fetchData();
