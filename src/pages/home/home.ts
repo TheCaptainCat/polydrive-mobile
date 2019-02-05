@@ -1,7 +1,10 @@
 import { Component } from '@angular/core';
-import { NavController, ModalController, NavParams, AlertController, LoadingController } from 'ionic-angular';
+import { NavController, NavParams, AlertController, LoadingController } from 'ionic-angular';
 import { HttpProvider } from '../../providers/http/http';
-import { FileViewerPage } from '../file-viewer/file-viewer';
+import { FileTransfer, FileTransferObject } from '@ionic-native/file-transfer';
+import { FileOpener } from '@ionic-native/file-opener';
+import { File } from '@ionic-native/file';
+import { AndroidPermissions } from '@ionic-native/android-permissions';
 
 @Component({
   selector: 'page-home',
@@ -9,20 +12,23 @@ import { FileViewerPage } from '../file-viewer/file-viewer';
 })
 export class HomePage {
 
-  currentFolder : {
+  private currentFolder : {
     id: number,
     name: string
   };
-  uploadFile: File;
-  currentFilesList: any[];
+  private currentFilesList: any[];
+  private fileTransfer: FileTransferObject;
 
   constructor(
     private navCtrl: NavController,
     private http: HttpProvider,
-    private modalCtrl: ModalController,
     private navParams: NavParams,
     private alertCtrl: AlertController,
-    private loadingCtrl: LoadingController
+    private loadingCtrl: LoadingController,
+    private transfer: FileTransfer,
+    private fileOpener: FileOpener,
+    private file: File,
+    private androidPermissions: AndroidPermissions
   ) {
     this.currentFolder = {
       id: null,
@@ -36,6 +42,14 @@ export class HomePage {
 
   ionViewDidLoad() {
     this.fetchData();
+    this.androidPermissions.checkPermission(this.androidPermissions.PERMISSION.WRITE_EXTERNAL_STORAGE).then(
+      result => {
+        if (!result.hasPermission) {
+          this.androidPermissions.requestPermission(this.androidPermissions.PERMISSION.WRITE_EXTERNAL_STORAGE);
+        }
+      },
+      err => this.androidPermissions.requestPermission(this.androidPermissions.PERMISSION.WRITE_EXTERNAL_STORAGE)
+    );
   }
 
   fetchData() {
@@ -99,7 +113,18 @@ export class HomePage {
   }
 
   openFile(file: any) {
-    this.modalCtrl.create(FileViewerPage, file).present();
+    console.log(file);
+    this.fileTransfer = this.transfer.create();
+    console.log(this.http.url + "/res/" + file.id + "/download", this.file.externalRootDirectory + 'Download/' + file.name + "." + file.extension);
+    this.fileTransfer.download(this.http.url + "/res/" + file.id + "/download", this.file.externalRootDirectory + 'Download/' + file.name + "." + file.extension).then(
+      res => {
+        console.log(res);
+        this.fileOpener.open(res.nativeURL, file.mime);
+      },
+      err => {
+        console.error(err);
+      }
+    )
   }
 
   openFolder(folder: any) {
@@ -109,9 +134,9 @@ export class HomePage {
     });
   }
 
-  upload() {
+  upload(uploadFile: any) {
     var fd = new FormData();
-    fd.append('file', this.uploadFile);
+    fd.append('file', uploadFile);
     const loading = this.loadingCtrl.create();
     loading.present();
     let route = "";
@@ -141,8 +166,8 @@ export class HomePage {
   }
 
   changeFile(e) {
-    this.uploadFile = e.target.files[0];
-    this.upload();
+    const uploadFile = e.target.files[0];
+    this.upload(uploadFile);
   }
 
   createFolder() {
