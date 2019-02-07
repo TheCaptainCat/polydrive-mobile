@@ -15,15 +15,13 @@ import { FileTransfer } from '@ionic-native/file-transfer';
 import { File } from '@ionic-native/file';
 import { AndroidPermissions } from '@ionic-native/android-permissions';
 import { PopoverFilePage } from '../pages/popover-file/popover-file';
-import { PopoverFoldersPage } from '../pages/popover-folders/popover-folders';
 
 @NgModule({
   declarations: [
     MyApp,
     HomePage,
     LoginPage,
-    PopoverFilePage,
-    PopoverFoldersPage
+    PopoverFilePage
   ],
   imports: [
     BrowserModule,
@@ -35,8 +33,7 @@ import { PopoverFoldersPage } from '../pages/popover-folders/popover-folders';
     MyApp,
     HomePage,
     LoginPage,
-    PopoverFilePage,
-    PopoverFoldersPage
+    PopoverFilePage
   ],
   providers: [
     StatusBar,

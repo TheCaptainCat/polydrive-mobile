@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { NavController, NavParams, AlertController, LoadingController, PopoverController, Platform } from 'ionic-angular';
+import { NavController, NavParams, AlertController, LoadingController, PopoverController, Platform, ModalController } from 'ionic-angular';
 import { HttpProvider } from '../../providers/http/http';
 import { FileOpener } from '@ionic-native/file-opener';
 import { File } from '@ionic-native/file';
@@ -28,7 +28,8 @@ export class HomePage {
     private file: File,
     private androidPermissions: AndroidPermissions,
     private popoverCtrl: PopoverController,
-    private platform: Platform
+    private platform: Platform,
+    private modalCtrl: ModalController
   ) {
     this.currentFolder = {
       id: null,
@@ -106,7 +107,6 @@ export class HomePage {
   }
 
   initFileList(content: any) {
-    console.log(content);
     if (content.children) {
       this.currentFilesList = content.children;
     }
@@ -307,7 +307,23 @@ export class HomePage {
   }
 
   moveFile(file: any) {
-
+    const modal = this.modalCtrl.create('FileMovePage');
+    modal.present();
+    modal.onDidDismiss(
+      data => {
+        data.id;
+        this.http.put('/res/' + file.id, {
+          parent_id: data.id
+        }).then(
+          res => {
+            this.fetchData();
+          },
+          err => {
+            console.error(err);
+          }
+        )
+      }
+    )
   }
   
 }

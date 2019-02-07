@@ -1,0 +1,20 @@
+<ion-header>
+  <ion-navbar color="primary">
+    <ion-title>Déplacer vers</ion-title>
+    <ion-buttons end>
+      <button ion-button (click)="validate()">Valider</button>
+      <button ion-button (click)="cancel()">Annuler</button>
+    </ion-buttons>
+  </ion-navbar>
+</ion-header>
+
+<ion-content>
+  <ion-list *ngIf="currentFoldersList && currentFoldersList.length">
+    <ng-container *ngFor="let folder of currentFoldersList">
+      <ion-item [color]="folder.id == selectedFolderId ? 'primary': 'white'" tappable (click)="openFolder(folder)">
+        <ion-icon color="gray" name="folder" item-start></ion-icon>
+        {{folder.name}}
+      </ion-item>
+    </ng-container>
+  </ion-list>
+</ion-content>
