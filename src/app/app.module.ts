@@ -14,12 +14,16 @@ import { FileOpener } from '@ionic-native/file-opener';
 import { FileTransfer } from '@ionic-native/file-transfer';
 import { File } from '@ionic-native/file';
 import { AndroidPermissions } from '@ionic-native/android-permissions';
+import { PopoverFilePage } from '../pages/popover-file/popover-file';
+import { PopoverFoldersPage } from '../pages/popover-folders/popover-folders';
 
 @NgModule({
   declarations: [
     MyApp,
     HomePage,
-    LoginPage
+    LoginPage,
+    PopoverFilePage,
+    PopoverFoldersPage
   ],
   imports: [
     BrowserModule,
@@ -30,7 +34,9 @@ import { AndroidPermissions } from '@ionic-native/android-permissions';
   entryComponents: [
     MyApp,
     HomePage,
-    LoginPage
+    LoginPage,
+    PopoverFilePage,
+    PopoverFoldersPage
   ],
   providers: [
     StatusBar,

@@ -4,7 +4,7 @@ import { Injectable } from '@angular/core';
 @Injectable()
 export class HttpProvider {
 
-  public url = 'http://192.168.1.14:5000';
+  public url = 'http://localhost:8080';
 
   constructor(
     private http: HttpClient
@@ -61,7 +61,7 @@ export class HttpProvider {
   put(route: string, body: any): Promise<any> {
     return new Promise(
       (resolve, reject) => {
-        this.http.put(this.url + route, body).subscribe(
+        this.http.put(this.url + route, body, {withCredentials: true}).subscribe(
           data => {
             resolve(data);
           },

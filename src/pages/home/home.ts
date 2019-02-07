@@ -1,10 +1,10 @@
 import { Component } from '@angular/core';
-import { NavController, NavParams, AlertController, LoadingController } from 'ionic-angular';
+import { NavController, NavParams, AlertController, LoadingController, PopoverController, Platform } from 'ionic-angular';
 import { HttpProvider } from '../../providers/http/http';
-import { FileTransfer, FileTransferObject } from '@ionic-native/file-transfer';
 import { FileOpener } from '@ionic-native/file-opener';
 import { File } from '@ionic-native/file';
 import { AndroidPermissions } from '@ionic-native/android-permissions';
+import { PopoverFilePage } from '../popover-file/popover-file';
 
 @Component({
   selector: 'page-home',
@@ -17,7 +17,6 @@ export class HomePage {
     name: string
   };
   private currentFilesList: any[];
-  private fileTransfer: FileTransferObject;
 
   constructor(
     private navCtrl: NavController,
@@ -25,10 +24,11 @@ export class HomePage {
     private navParams: NavParams,
     private alertCtrl: AlertController,
     private loadingCtrl: LoadingController,
-    private transfer: FileTransfer,
     private fileOpener: FileOpener,
     private file: File,
-    private androidPermissions: AndroidPermissions
+    private androidPermissions: AndroidPermissions,
+    private popoverCtrl: PopoverController,
+    private platform: Platform
   ) {
     this.currentFolder = {
       id: null,
@@ -42,14 +42,16 @@ export class HomePage {
 
   ionViewDidLoad() {
     this.fetchData();
-    this.androidPermissions.checkPermission(this.androidPermissions.PERMISSION.WRITE_EXTERNAL_STORAGE).then(
-      result => {
-        if (!result.hasPermission) {
-          this.androidPermissions.requestPermission(this.androidPermissions.PERMISSION.WRITE_EXTERNAL_STORAGE);
-        }
-      },
-      err => this.androidPermissions.requestPermission(this.androidPermissions.PERMISSION.WRITE_EXTERNAL_STORAGE)
-    );
+    if (this.platform.is('core')) {
+      this.androidPermissions.checkPermission(this.androidPermissions.PERMISSION.WRITE_EXTERNAL_STORAGE).then(
+        result => {
+          if (!result.hasPermission) {
+            this.androidPermissions.requestPermission(this.androidPermissions.PERMISSION.WRITE_EXTERNAL_STORAGE);
+          }
+        },
+        err => this.androidPermissions.requestPermission(this.androidPermissions.PERMISSION.WRITE_EXTERNAL_STORAGE)
+      );
+    }
   }
 
   fetchData() {
@@ -104,6 +106,7 @@ export class HomePage {
   }
 
   initFileList(content: any) {
+    console.log(content);
     if (content.children) {
       this.currentFilesList = content.children;
     }
@@ -113,18 +116,21 @@ export class HomePage {
   }
 
   openFile(file: any) {
-    console.log(file);
-    this.fileTransfer = this.transfer.create();
-    console.log(this.http.url + "/res/" + file.id + "/download", this.file.externalRootDirectory + 'Download/' + file.name + "." + file.extension);
-    this.fileTransfer.download(this.http.url + "/res/" + file.id + "/download", this.file.externalRootDirectory + 'Download/' + file.name + "." + file.extension).then(
+    this.http.get("/res/" + file.id + "/download", "blob").then(
       res => {
-        console.log(res);
-        this.fileOpener.open(res.nativeURL, file.mime);
+        this.file.writeFile(this.file.externalRootDirectory + 'Download/', file.name + "." + file.extension, res).then(
+          res => {
+            this.fileOpener.open(res.nativeURL, file.mime);
+          },
+          err => {
+            console.error(err);
+          }
+        )
       },
       err => {
         console.error(err);
       }
-    )
+    );
   }
 
   openFolder(folder: any) {
@@ -217,28 +223,10 @@ export class HomePage {
     alert.present();
   }
 
-  selectFile(file: any) {
-    this.alertCtrl.create({
-      title: 'Supprimer le fichier ?',
-      buttons: [
-        {
-          text: 'Supprimer',
-          handler: () => {
-            this.delete(file);
-          }
-        },
-        {
-          text: 'Annuler'
-        }
-      ]
-    }).present();
-  }
-
-  delete(file) {
-    console.log(file);
+  deleteFile(file) {
     const loading = this.loadingCtrl.create();
     loading.present();
-    this.http.delete('/files/' + file.id).then(
+    this.http.delete('/res/' + file.id).then(
       res => {
         loading.dismiss();
         console.log(res);
@@ -260,6 +248,66 @@ export class HomePage {
         console.log(err);
       }
     )
+  }
+
+  presentPopover(event, file) {
+    event.stopPropagation();
+    const pop = this.popoverCtrl.create(PopoverFilePage);
+    pop.present({
+      ev: event
+    });
+    pop.onWillDismiss(data => {
+      if (data) {
+        switch (data.value) {
+          case 1:
+            //Rename
+            this.renameFile(file);
+            break;
+          case 2:
+            //Déplacer
+            this.moveFile(file);
+            break;
+          default:
+            break;
+        }
+      }
+    });
+  }
+
+  renameFile(file: any) {
+    console.log(file);
+    const alert = this.alertCtrl.create({
+      title: 'Modifier le nom du fichier',
+      inputs: [
+        {
+          name: 'newName',
+          type: 'text'
+        }
+      ],
+      buttons: [
+        'Annuler',
+        {
+          text: 'Valider',
+          handler: data => {
+            this.http.put('/res/' + file.id, {
+              name: data.newName
+            }).then(
+              res => {
+                this.fetchData();
+              },
+              err => {
+                console.error(err);
+              }
+            )
+          }
+        }
+      ]
+    });
+    alert.present();
+  }
+
+  moveFile(file: any) {
+
   }
   
 }
