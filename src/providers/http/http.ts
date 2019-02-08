@@ -4,7 +4,7 @@ import { Injectable } from '@angular/core';
 @Injectable()
 export class HttpProvider {
 
-  public url = 'http://localhost:8080';
+  public url: string;
 
   constructor(
     private http: HttpClient
@@ -13,7 +13,7 @@ export class HttpProvider {
   get(route: string, type?: any): Promise<any> {
     return new Promise(
       (resolve, reject) => {
-        this.http.get(this.url + route, {
+        this.http.get("http://" + this.url + route, {
           withCredentials: true,
           responseType: type
         }).subscribe(
@@ -31,7 +31,7 @@ export class HttpProvider {
   post(route: string, body: any): Promise<any> {
     return new Promise(
       (resolve, reject) => {
-        this.http.post(this.url + route, body, {withCredentials: true}).subscribe(
+        this.http.post("http://" + this.url + route, body, {withCredentials: true}).subscribe(
           data => {
             resolve(data);
           },
@@ -46,7 +46,7 @@ export class HttpProvider {
   delete(route: string) {
     return new Promise(
       (resolve, reject) => {
-        this.http.delete(this.url + route, {withCredentials: true}).subscribe(
+        this.http.delete("http://" + this.url + route, {withCredentials: true}).subscribe(
           data => {
             resolve(data)
           },
@@ -61,7 +61,7 @@ export class HttpProvider {
   put(route: string, body: any): Promise<any> {
     return new Promise(
       (resolve, reject) => {
-        this.http.put(this.url + route, body, {withCredentials: true}).subscribe(
+        this.http.put("http://" + this.url + route, body, {withCredentials: true}).subscribe(
           data => {
             resolve(data);
           },

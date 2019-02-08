@@ -24,12 +24,12 @@
         {{file.name}}
         <ion-icon class="popover" (click)="presentPopover($event, file)" item-end name="more"></ion-icon>
       </ion-item>
-      <ion-item tappable *ngIf="!file.children" (tap)="openFile(file)">
+      <ion-item tappable *ngIf="!file.children" (click)="openFile(file)">
         <ion-icon color="gray" name="document" item-start></ion-icon>
         {{file.name}}
         <ion-icon class="popover" (click)="presentPopover($event, file)" item-end name="more"></ion-icon>
       </ion-item>
-      <ion-item-options slide="right">
+      <ion-item-options *ngIf="!isSharedPage" slide="right">
         <button ion-button color="danger" (click)="deleteFile(file)">
           <ion-icon name="trash"></ion-icon>
           Supprimer

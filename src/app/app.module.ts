@@ -15,6 +15,8 @@ import { FileTransfer } from '@ionic-native/file-transfer';
 import { File } from '@ionic-native/file';
 import { AndroidPermissions } from '@ionic-native/android-permissions';
 import { PopoverFilePage } from '../pages/popover-file/popover-file';
+import { IonicStorageModule } from '@ionic/storage';
+import { IonicSelectableModule } from 'ionic-selectable';
 
 @NgModule({
   declarations: [
@@ -26,7 +28,9 @@ import { PopoverFilePage } from '../pages/popover-file/popover-file';
   imports: [
     BrowserModule,
     IonicModule.forRoot(MyApp),
-    HttpClientModule
+    HttpClientModule,
+    IonicStorageModule.forRoot(),
+    IonicSelectableModule
   ],
   bootstrap: [IonicApp],
   entryComponents: [

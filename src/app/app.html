@@ -10,6 +10,9 @@
       <button menuClose ion-item *ngFor="let p of pages" (click)="openPage(p)">
         {{p.title}}
       </button>
+      <button menuClose ion-item (click)="openShared()">
+        Fichiers partagés avec moi
+      </button>
       <button menuClose ion-item (click)="logout()">
         Déconnexion
       </button>

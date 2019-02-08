@@ -17,6 +17,7 @@ export class HomePage {
     name: string
   };
   private currentFilesList: any[];
+  private isSharedPage: boolean;
 
   constructor(
     private navCtrl: NavController,
@@ -58,8 +59,12 @@ export class HomePage {
   fetchData() {
     const loading = this.loadingCtrl.create();
     loading.present();
+    let route = '/res';
+    this.isSharedPage = this.navParams.get('sharedPage');
+    if (this.isSharedPage)
+      route = '/res/shared';
     if (this.currentFolder.id) {
-      this.http.get('/res/' + this.currentFolder.id).then(
+      this.http.get(route + '/' + this.currentFolder.id).then(
         res => {
           loading.dismiss();
           this.initFileList(res.content);
@@ -83,7 +88,7 @@ export class HomePage {
       );
     }
     else {
-      this.http.get('/res').then(
+      this.http.get(route).then(
         res => {
           loading.dismiss();
           this.initFileList(res.content);
@@ -194,7 +199,6 @@ export class HomePage {
         {
           text: 'Ok',
           handler: data => {
-            console.log(data);
             this.http.post('/res', {
               name: data.folderName,
               parent_id: this.currentFolder.id,
@@ -252,7 +256,9 @@ export class HomePage {
 
   presentPopover(event, file) {
     event.stopPropagation();
-    const pop = this.popoverCtrl.create(PopoverFilePage);
+    const pop = this.popoverCtrl.create(PopoverFilePage, {
+      isSharedPage: this.isSharedPage
+    });
     pop.present({
       ev: event
     });
@@ -266,6 +272,10 @@ export class HomePage {
           case 2:
             //Déplacer
             this.moveFile(file);
+            break;
+          case 3:
+            //Déplacer
+            this.shareFile(file);
             break;
           default:
             break;
@@ -311,19 +321,41 @@ export class HomePage {
     modal.present();
     modal.onDidDismiss(
       data => {
-        data.id;
-        this.http.put('/res/' + file.id, {
-          parent_id: data.id
-        }).then(
-          res => {
-            this.fetchData();
-          },
-          err => {
-            console.error(err);
-          }
-        )
+        if (data) {
+          data.id;
+          this.http.put('/res/' + file.id, {
+            parent_id: data.id
+          }).then(
+            res => {
+              this.fetchData();
+            },
+            err => {
+              console.error(err);
+            }
+          );
+        }
       }
     )
+  }
+
+  shareFile(file: any) {
+    const modal = this.modalCtrl.create('SharePage');
+    modal.present();
+    modal.onDidDismiss(
+      data => {
+        console.log(data);
+        if (data) {
+          this.http.post('/res/share/' + file.id + '/' + data.userId + '/' + data.type, {}).then(
+            res => {
+              console.log(res);
+            },
+            err => {
+              console.log(err);
+            }
+          );
+        }
+      }
+    );
   }
   
 }

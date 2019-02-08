@@ -2,7 +2,10 @@
   <ion-item tappable (click)="quit(1)">
     Renommer
   </ion-item>
-  <ion-item tappable (click)="quit(2)">
+  <ion-item *ngIf="!isSharedPage" tappable (click)="quit(2)">
     Déplacer
+  </ion-item>
+  <ion-item *ngIf="!isSharedPage" tappable (click)="quit(3)">
+    Partager
   </ion-item>
 </ion-list>

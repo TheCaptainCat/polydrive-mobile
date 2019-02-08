@@ -1,0 +1,33 @@
+<ion-header>
+  <ion-navbar color="primary">
+    <ion-title>Partager avec</ion-title>
+    <ion-buttons end>
+      <button ion-button (click)="quit()">Annuler</button>
+    </ion-buttons>
+  </ion-navbar>
+</ion-header>
+
+
+<ion-content>
+  <form [formGroup]="shareForm" (ngSubmit)="validate()">
+    <ion-item>
+      <ion-label>Utilisateur</ion-label>
+      <ionic-selectable
+        formControlName="user"
+        item-content
+        itemTextField="username"
+        itemValueField="id"
+        [items]="users"
+        [canSearch]="true">
+		  </ionic-selectable>
+    </ion-item>
+    <ion-item>
+      <ion-label>Droits</ion-label>
+      <ion-select formControlName="type">
+        <ion-option value="edit">Modification</ion-option>
+        <ion-option value="view">Lecture</ion-option>
+      </ion-select>
+    </ion-item>
+    <button ion-button type="submit" [disabled]="!shareForm.valid" block>Valider</button>
+  </form>
+</ion-content>

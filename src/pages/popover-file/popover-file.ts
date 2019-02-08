@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { IonicPage, ViewController } from 'ionic-angular';
+import { IonicPage, ViewController, NavParams } from 'ionic-angular';
 
 
 @IonicPage()
@@ -9,7 +9,13 @@ import { IonicPage, ViewController } from 'ionic-angular';
 })
 export class PopoverFilePage {
 
-  constructor(public viewCtrl: ViewController) {
+  isSharedPage: boolean;
+
+  constructor(
+    public viewCtrl: ViewController,
+    private navParams: NavParams
+    ) {
+      this.isSharedPage = this.navParams.get('isSharedPage');
   }
 
   quit(val: number) {
