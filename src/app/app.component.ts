@@ -47,6 +47,7 @@ export class MyApp {
           }
           else {
             this.http.url = res;
+            this.testConnection();
             this.tryLogin();
           }
         }
@@ -99,7 +100,8 @@ export class MyApp {
         console.log(res);
         loading.dismiss();
         this.alertCtrl.create({
-          title: 'Vous êtes connecté au serveur'
+          title: 'Vous êtes connecté au serveur',
+          buttons: ['Ok']
         }).present();
         this.storage.set('address', this.http.url);
         this.tryLogin();
@@ -131,6 +133,30 @@ export class MyApp {
     this.nav.setRoot(HomePage, {
       sharedPage: true
     });
+  }
+
+  editServer() {
+    const alert = this.alertCtrl.create({
+      title: "Changer l'adresse du serveur",
+      message: "Veuillez indiquer l'adresse du serveur",
+      inputs: [
+        {
+          type: 'text',
+          name: 'address'
+        }
+      ],
+      buttons: [
+        {
+          text: 'Valider',
+          handler: data => {
+            this.http.url = data.address;
+            this.testConnection();
+          }
+        }
+      ],
+      enableBackdropDismiss: false
+    });
+    alert.present();
   }
 
   logout() {

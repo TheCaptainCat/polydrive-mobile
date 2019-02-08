@@ -4,7 +4,7 @@
       <ion-icon name="menu"></ion-icon>
     </button>
     <ion-title>{{currentFolder.name}}</ion-title>
-    <ion-buttons end>
+    <ion-buttons *ngIf="!isSharedPage" end>
       <div>
         <label tappable class="navbar-icon">
           <ion-icon color="light" name="cloud-upload"></ion-icon>

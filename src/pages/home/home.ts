@@ -60,9 +60,6 @@ export class HomePage {
     const loading = this.loadingCtrl.create();
     loading.present();
     let route = '/res';
-    this.isSharedPage = this.navParams.get('sharedPage');
-    if (this.isSharedPage)
-      route = '/res/shared';
     if (this.currentFolder.id) {
       this.http.get(route + '/' + this.currentFolder.id).then(
         res => {
@@ -88,6 +85,9 @@ export class HomePage {
       );
     }
     else {
+      this.isSharedPage = this.navParams.get('sharedPage');
+      if (this.isSharedPage)
+        route = '/res/shared';
       this.http.get(route).then(
         res => {
           loading.dismiss();
@@ -128,20 +128,31 @@ export class HomePage {
             this.fileOpener.open(res.nativeURL, file.mime);
           },
           err => {
-            console.error(err);
+            this.alertCtrl.create({
+              title: 'Le fichier a déjà été téléchargé',
+              message: 'Vous pouvez y accéder en allant dans Téléchargements',
+              buttons: ['Ok']
+            }).present();
           }
         )
       },
       err => {
-        console.error(err);
+        this.alertCtrl.create({
+          title: 'Erreur lors du téléchargement',
+          message: 'Une erreur est survenue. Veuillez réessayer',
+          buttons: ['Ok']
+        }).present();
       }
     );
   }
 
   openFolder(folder: any) {
+    let sharedPage = false;
+    this.isSharedPage ? sharedPage = true : sharedPage = false;
     this.navCtrl.push(HomePage, {
       folderId: folder.id,
-      folderName: folder.name
+      folderName: folder.name,
+      sharedPage: sharedPage
     });
   }
 
